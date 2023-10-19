@@ -1,6 +1,12 @@
 #!/bin/python3
-from os     import system
-from csv    import reader, writer
+from sys     import argv
+from os      import system
+from os.path import exists
+from csv     import reader, writer
+
+#varibles
+force = False
+helptext = "\ncombiner\n - combines all localisation files and your localisation file into new localisation file. \nCreated by @tunguso4ka. \nArgv commands - 'help', 'force', 'GameLocDir=path', 'YourLocDir=path'"
 
 #loading pathes from config
 file = open('config')
@@ -9,6 +15,14 @@ GameLocDir = lines[0].strip()
 YourLocDir = lines[1].strip()
 file.close()
 print("Config loaded.")
+
+#reading argv
+for i in argv[1:]:
+    f = i.split('=', 1)
+    if f[0] == 'GameLocDir': GameLocDir = f[1]
+    elif f[0] == 'YourLocDir': YourLocDir = f[1]
+    elif f[0] == 'force': force = True
+    elif f[0] == 'help': print(helptext); exit()
 
 #dictionary files
 GameLoc     = {} #combined official game localization
@@ -27,29 +41,27 @@ def ReturnLocList(path, doformat=False):
 
 #combining official game locals into one
 #aircraftweapons.csv, parts.csv, mission.csv, tips.csv, tutorials.csv, aircraftweaponsDes.csv, descriptions.csv, languages.csv
-GameLoc |= ReturnLocList(GameLocDir+"languages.csv", True)
-GameLoc |= ReturnLocList(GameLocDir+"tips.csv", True)
-GameLoc |= ReturnLocList(GameLocDir+"tutorials.csv", True)
-GameLoc |= ReturnLocList(GameLocDir+"parts.csv", True)
-GameLoc |= ReturnLocList(GameLocDir+"descriptions.csv", True)
-GameLoc |= ReturnLocList(GameLocDir+"aircraftweapons.csv", True)
-GameLoc |= ReturnLocList(GameLocDir+"aircraftweaponsDes.csv", True)
+for i in ["languages.csv", "tips.csv", "tutorials.csv", "parts.csv", "descriptions.csv", "aircraftweapons.csv", "aircraftweaponsDes.csv"]:
+    if not exists(GameLocDir+i): print(f"Directory {i} does not exist. Skipping..."); continue
+    GameLoc |= ReturnLocList(GameLocDir+i, True)
 print(f"Loaded {len(GameLoc)} game localization lines.")
 
 #getting your local
-YourLoc |= ReturnLocList(YourLocDir+"languages.csv")
-print(f"Loaded {len(YourLoc)} your localization lines.")
+if exists(YourLocDir+"languages.csv"):
+    YourLoc |= ReturnLocList(YourLocDir+"languages.csv")
+    print(f"Loaded {len(YourLoc)} your localization lines.")
 
 #combining both locals
 NewLoc = GameLoc | YourLoc
 print(f"Combined into {len(NewLoc)} new localization lines.")
 
 #safety feature (WOW!)
-res = input("Proceed? y/N - ")
-if res not in "yY": exit()
+if not force:
+    res = input("Proceed? y/N - ")
+    if res not in "yY": exit()
 
 #moving old local file and creating a new one from combined localization
-system(f"mv {YourLocDir}languages.csv {YourLocDir}old_languages.csv")
+if exists(YourLocDir+"languages.csv"): system(f"mv {YourLocDir}languages.csv {YourLocDir}old_languages.csv")
 file = open(YourLocDir+"languages.csv", 'w')
 for i in NewLoc: file.write(f"{i},{NewLoc[i]}\n")
 file.close()
