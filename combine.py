@@ -1,8 +1,8 @@
 #!/bin/python3
 from sys     import argv
-from os      import system
 from os.path import exists
 from csv     import reader, writer
+from pathlib import Path
 
 #varibles
 force = False
@@ -61,7 +61,8 @@ if not force:
     if res not in "yY": exit()
 
 #moving old local file and creating a new one from combined localization
-if exists(YourLocDir+"languages.csv"): system(f"mv {YourLocDir}languages.csv {YourLocDir}old_languages.csv")
+if exists(YourLocDir+"languages.csv"): Path(YourLocDir+"languages.csv").rename(YourLocDir+"old_languages.csv")
+
 file = open(YourLocDir+"languages.csv", 'w')
 for i in NewLoc: file.write(f"{i},{NewLoc[i]}\n")
 file.close()
