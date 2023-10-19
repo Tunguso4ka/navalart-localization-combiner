@@ -50,7 +50,7 @@ if res not in "yY": exit()
 
 #moving old local file and creating a new one from combined localization
 system(f"mv {YourLocDir}languages.csv {YourLocDir}old_languages.csv")
-file = open(YourLocDir, 'w')
+file = open(YourLocDir+"languages.csv", 'w')
 for i in NewLoc: file.write(f"{i},{NewLoc[i]}\n")
 file.close()
 print("Work done!")
