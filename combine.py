@@ -21,8 +21,8 @@ def ReturnLocList(path, doformat=False):
         rfile = reader(file)
         LocList = {}
         for i in rfile:
-            if doformat: LocList[i[0]].strip() = i[2].strip()
-            else: LocList[i[0]] = i[1]
+            if doformat: LocList[i[0]] = i[2].strip()
+            else: LocList[i[0]] = i[1].strip()
         return LocList
 
 #combining official game locals into one
