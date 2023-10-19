@@ -49,7 +49,7 @@ res = input("Proceed? y/N - ")
 if res not in "yY": exit()
 
 #moving old local file and creating a new one from combined localization
-system(f"mv {YourLocDir}languages.csv {OldLocDir}old_languages.csv")
+system(f"mv {YourLocDir}languages.csv {YourLocDir}old_languages.csv")
 file = open(YourLocDir, 'w')
 for i in NewLoc: file.write(f"{i},{NewLoc[i]}\n")
 file.close()
