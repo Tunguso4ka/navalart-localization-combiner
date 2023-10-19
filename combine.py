@@ -35,8 +35,8 @@ def ReturnLocList(path, doformat=False):
         rfile = reader(file)
         LocList = {}
         for i in rfile:
-            if doformat: LocList[i[0]] = i[2].strip()
-            else: LocList[i[0]] = i[1].strip()
+            if doformat: LocList[i[0].replace('\ufeff', '')] = i[2].strip()
+            else: LocList[i[0].replace('\ufeff', '')] = i[1].strip()
         return LocList
 
 #combining official game locals into one
@@ -62,8 +62,10 @@ if not force:
 
 #moving old local file and creating a new one from combined localization
 if exists(YourLocDir+"languages.csv"): Path(YourLocDir+"languages.csv").rename(YourLocDir+"old_languages.csv")
-
 file = open(YourLocDir+"languages.csv", 'w')
-for i in NewLoc: file.write(f"{i},{NewLoc[i]}\n")
-file.close()
-print("Work done!")
+file = writer(file)
+for i in NewLoc:
+    f = ''
+    if i in GameLoc: f = GameLoc[i]
+    file.writerow([i, NewLoc[i], f])
+print("Combined and saved successfully!")
